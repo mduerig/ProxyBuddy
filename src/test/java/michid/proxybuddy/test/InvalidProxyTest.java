@@ -2,15 +2,16 @@ package michid.proxybuddy.test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import michid.proxybuddy.ProxyBuddy;
 import org.junit.jupiter.api.Test;
+
+import michid.proxybuddy.ProxyBuddy;
 
 public class InvalidProxyTest {
 
     @Test
     void proxyNonOpenPackage() {
         var proxyBuddy = new ProxyBuddy<>(Object.class,
-            (pipe, method, arguments) -> null);
+            (proxy, pipe, method, arguments) -> null);
 
         assertThrows(IllegalAccessException.class, proxyBuddy::createProxy);
     }
@@ -19,21 +20,21 @@ public class InvalidProxyTest {
 
     @Test
     void proxyFinalClass() {
-        var proxyBuddy = new ProxyBuddy<>(T.class, (pipe, method, arguments) -> null);
+        var proxyBuddy = new ProxyBuddy<>(T.class, (proxy, pipe, method, arguments) -> null);
 
         assertThrows(IllegalArgumentException.class, proxyBuddy::createProxy);
     }
 
     @Test
     void proxyArray() {
-        var proxyBuddy = new ProxyBuddy<>(T[].class, (pipe, method, arguments) -> null);
+        var proxyBuddy = new ProxyBuddy<>(T[].class, (proxy, pipe, method, arguments) -> null);
 
         assertThrows(IllegalArgumentException.class, proxyBuddy::createProxy);
     }
 
     @Test
     void proxyPrimitive() {
-        var proxyBuddy = new ProxyBuddy<>(int.class, (pipe, method, arguments) -> null);
+        var proxyBuddy = new ProxyBuddy<>(int.class, (proxy, pipe, method, arguments) -> null);
 
         assertThrows(IllegalArgumentException.class, proxyBuddy::createProxy);
     }

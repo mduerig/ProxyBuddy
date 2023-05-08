@@ -3,8 +3,9 @@ package michid.proxybuddy.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import michid.proxybuddy.ProxyBuddy;
 import org.junit.jupiter.api.Test;
+
+import michid.proxybuddy.ProxyBuddy;
 
 public class ImplementInterfacesTest {
 
@@ -24,7 +25,7 @@ public class ImplementInterfacesTest {
 
     @Test
     void implementInterfaces() throws Exception {
-        var proxy = new ProxyBuddy<>(C.class, (pipe, method, arguments) ->
+        var proxy = new ProxyBuddy<>(C.class, (thisProxy, pipe, method, arguments) ->
             switch (method.getName()) {
                 case "m1" -> 1;
                 case "m2" -> 2;

@@ -7,8 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 
-import michid.proxybuddy.ProxyBuddy;
 import org.junit.jupiter.api.Test;
+
+import michid.proxybuddy.ProxyBuddy;
 
 public class ProxyCanEqualTargetTest {
 
@@ -44,7 +45,7 @@ public class ProxyCanEqualTargetTest {
 
     private static Target createProxy(Target target)
     throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
-        return new ProxyBuddy<>(Target.class, (pipe, method, arguments) -> pipe.apply(target))
+        return new ProxyBuddy<>(Target.class, (proxy,pipe, method, arguments) -> pipe.apply(target))
             .withConstructor(Target.class.getConstructor(int.class), 0)
             .withProxyCanEqualTarget(target)
             .createProxy();

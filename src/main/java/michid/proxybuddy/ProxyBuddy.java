@@ -23,6 +23,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.Pipe;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.implementation.bind.annotation.This;
 
 /**
  * {@code ProxyBuddy} is a simple factory for creating dynamic proxies for arbitrary
@@ -71,13 +72,14 @@ public class ProxyBuddy<T> {
 
         /**
          * The {@code invoke} method is called for each call to a method of a proxy.
+         * @param proxy  the instance of the proxy this handler was invoked for.
          * @param pipe  a function for forwarding a proxy call to a real instance of the same type {@code T}.
          * @param method  the method that was called on the proxy
          * @param arguments  the arguments that were passed to the proxy method
          * @return  result of the method call
          * @throws Exception
          */
-        Object invoke(Function<T, Object> pipe, Method method, Object... arguments) throws Exception;
+        Object invoke(T proxy, Function<T, Object> pipe, Method method, Object... arguments) throws Exception;
     }
 
     /**
@@ -108,7 +110,7 @@ public class ProxyBuddy<T> {
      * @return  a new {@code ProxyBuddy} instance
      */
     public ProxyBuddy<T> withProxyNeverEqualsTarget(Object witness) {
-        return new ProxyBuddy<>(superClass, interfaces, constructor, arguments, (pipe, method, arguments) -> {
+        return new ProxyBuddy<>(superClass, interfaces, constructor, arguments, (proxy, pipe, method, arguments) -> {
             if ("equals".equals(method.getName())) {
                 interface Witness {
                     Object get();
@@ -126,7 +128,7 @@ public class ProxyBuddy<T> {
             } else if ("hashCode".equals(method.getName())) {
                 return 31 * witness.hashCode();
             } else {
-                return invocationHandler.invoke(pipe, method, arguments);
+                return invocationHandler.invoke(proxy, pipe, method, arguments);
             }
         });
     }
@@ -140,13 +142,13 @@ public class ProxyBuddy<T> {
      * @return  a new {@code ProxyBuddy} instance
      */
     public ProxyBuddy<T> withProxyCanEqualTarget(Object witness) {
-        return new ProxyBuddy<>(superClass, interfaces, constructor, arguments, (pipe, method, arguments) -> {
+        return new ProxyBuddy<>(superClass, interfaces, constructor, arguments, (proxy,pipe, method, arguments) -> {
             if ("equals".equals(method.getName())) {
                 return witness.equals(arguments[0]);
             } else if ("hashCode".equals(method.getName())) {
                 return witness.hashCode();
             } else {
-                return invocationHandler.invoke(pipe, method, arguments);
+                return invocationHandler.invoke(proxy, pipe, method, arguments);
             }
         });
     }
@@ -221,9 +223,9 @@ public class ProxyBuddy<T> {
         }
 
         @RuntimeType
-        public Object delegate(@Pipe Function<T, Object> pipe, @Origin Method method, @AllArguments Object[] args)
+        public Object delegate(@This T proxy, @Pipe Function<T, Object> pipe, @Origin Method method, @AllArguments Object[] args)
         throws Exception {
-            return invocationHandler.invoke(pipe, method, args);
+            return invocationHandler.invoke(proxy, pipe, method, args);
         }
     }
 

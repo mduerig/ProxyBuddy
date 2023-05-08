@@ -2,8 +2,9 @@ package michid.proxybuddy.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import michid.proxybuddy.ProxyBuddy;
 import org.junit.jupiter.api.Test;
+
+import michid.proxybuddy.ProxyBuddy;
 
 public class ProxyLocalTest {
 
@@ -16,7 +17,7 @@ public class ProxyLocalTest {
         }
 
         var localProxy = new ProxyBuddy<>(Local.class,
-                (pipe, method, arguments) -> pipe.apply(new Local()))
+                (proxy, pipe, method, arguments) -> pipe.apply(new Local()))
             .withConstructor(Local.class.getConstructor(ProxyLocalTest.class), new Object[]{this})
             .createProxy();
 

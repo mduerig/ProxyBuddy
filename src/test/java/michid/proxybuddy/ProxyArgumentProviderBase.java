@@ -5,11 +5,12 @@ import static michid.proxybuddy.ProxyArgumentProviderBase.ProxyType.REFLECT;
 
 import java.util.stream.Stream;
 
-import michid.proxybuddy.ProxyBuddy.InvocationHandler;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+
+import michid.proxybuddy.ProxyBuddy.InvocationHandler;
 
 public abstract class ProxyArgumentProviderBase<T> implements ArgumentsProvider {
 
@@ -29,10 +30,10 @@ public abstract class ProxyArgumentProviderBase<T> implements ArgumentsProvider 
     }
 
     private static <T> InvocationHandler<T> newReflectionHandler(T target) {
-        return  (pipe, method, arguments) -> method.invoke(target, arguments);
+        return  (proxy, pipe, method, arguments) -> method.invoke(target, arguments);
     }
 
     private static <T> InvocationHandler<T> newDelegationHandler(T target) {
-        return  (pipe, method, arguments) -> pipe.apply(target);
+        return  (proxy, pipe, method, arguments) -> pipe.apply(target);
     }
 }
